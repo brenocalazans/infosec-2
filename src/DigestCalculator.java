@@ -1,6 +1,8 @@
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Array;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 
 
 public class DigestCalculator {
@@ -23,9 +25,11 @@ public class DigestCalculator {
 	    return buf.toString();
 	}
 	
+	@SuppressWarnings("null")
 	public static void main(String[] args) throws Exception {
 		MessageDigest digest;
-		String digestType;
+		String digestType, digestListFile;	
+		ArrayList<String> files = new ArrayList();
 		
 		// verify args
 		if (args.length < 3) {
@@ -35,6 +39,15 @@ public class DigestCalculator {
 		
 		// get digestType
 		digestType = args[0];
+		
+		// get files to be processed
+		for (int i = 1; i < args.length - 1; i++)
+		{
+			files.add(args[i]);
+		}
+		
+		// get digistListFile
+		digestListFile = args[args.length-1];
 		
 		switch(digestType) {
 			case "MD5": 
@@ -48,6 +61,11 @@ public class DigestCalculator {
 				System.exit(1);
 		}
 		
+		
+		// read files		
+		for (String string : files) {
+			System.out.println(string);			
+		}
 	}
 
 }
