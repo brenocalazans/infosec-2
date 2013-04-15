@@ -24,8 +24,8 @@ class DigestFile {
 	public ArrayList<DigestDetail> digestList = new ArrayList<DigestDetail>();
 	public String currentStatus = null;
 
-	public DigestFile(String path, String digestAlgorithm) throws IOException, NoSuchAlgorithmException {
-		this.filename = path;
+	public DigestFile(String path, String digestAlgorithm) throws IOException, NoSuchAlgorithmException {		
+		this.filename= path.substring(path.lastIndexOf('/')+1);
 		
 		File file = new File(path);
 		byte[] fileData = new byte[(int) file.length()];
@@ -51,7 +51,7 @@ class DigestFile {
 class DigestListFile {
 	// Lista de arquivos descritos neste DigestFile
 	public DigestFile[] files;
-	public String file;
+	public String file;	
 	public ArrayList<String> digestLines = new ArrayList<String>();
 
 	public DigestListFile(String file) throws IOException {
