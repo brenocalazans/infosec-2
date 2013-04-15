@@ -1,3 +1,4 @@
+import java.io.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -16,6 +17,31 @@ class DigestDetail {
 class FileDigestDetail {
 	public String filename;
 	public DigestDetail[] digestList;
+
+	public FileDigestDetail(String path) throws IOException, NoSuchAlgorithmException {
+		this.filename = path;
+		this.digestList = new DigestDetail[2];
+
+		File file = new File(path);
+		byte[] fileData = new byte[(int) file.length()];
+		DataInputStream dis = new DataInputStream(new FileInputStream(file));
+		dis.readFully(fileData);
+		dis.close();
+
+		DigestDetail dd = new DigestDetail();
+		MessageDigest md = DigestCalculator.getMD5();
+		md.update(fileData);
+		dd.digestType = "MD5";
+		dd.digest = DigestCalculator.encodeHexString(md.digest());
+		this.digestList[0] = dd;
+
+		dd = new DigestDetail();
+		md = DigestCalculator.getSHA1();
+		md.update(fileData);
+		dd.digestType = "SHA1";
+		dd.digest = DigestCalculator.encodeHexString(md.digest());
+		this.digestList[0] = dd;
+	}
 
 	@Override
 	public String toString() {
@@ -46,65 +72,65 @@ class DigestFile {
 }
 
 public class DigestCalculator {
-	
+
 	public static final String ENCODING = "UTF-8";
 
 	public static MessageDigest getMD5() throws NoSuchAlgorithmException {
 		return MessageDigest.getInstance("MD5");
 	}
+
 	public static MessageDigest getSHA1() throws NoSuchAlgorithmException {
 		return MessageDigest.getInstance("SHA1");
 	}
-	
+
 	public static String encodeHexString(byte[] str) {
 		StringBuffer buf = new StringBuffer();
-	    for(int i = 0; i < str.length; i++) {
-	       String hex = Integer.toHexString(0x0100 + (str[i] & 0x00FF)).substring(1);
-	       buf.append((hex.length() < 2 ? "0" : "") + hex);
-	    }
-	    return buf.toString();
+		for (int i = 0; i < str.length; i++) {
+			String hex = Integer.toHexString(0x0100 + (str[i] & 0x00FF)).substring(1);
+			buf.append((hex.length() < 2 ? "0" : "") + hex);
+		}
+		return buf.toString();
 	}
-	
+
 	@SuppressWarnings("null")
 	public static void main(String[] args) throws Exception {
 		MessageDigest digest;
-		String digestType, digestListFile;	
+		String digestType, digestListFile;
 		ArrayList<String> files = new ArrayList();
-		
+
 		// verify args
 		if (args.length < 3) {
 			System.err.println("Usage: java DigestCalculator digestType filePath1...filePathN digestListFilePath");
 			System.exit(1);
 		}
-		
+
 		// get digestType
 		digestType = args[0];
-		
+
 		// get files to be processed
-		for (int i = 1; i < args.length - 1; i++)
-		{
+		for (int i = 1; i < args.length - 1; i++) {
 			files.add(args[i]);
 		}
-		
+
 		// get digistListFile
-		digestListFile = args[args.length-1];
-		
-		switch(digestType) {
-			case "MD5": 
+		digestListFile = args[args.length - 1];
+
+		switch (digestType) {
+			case "MD5":
 				digest = getMD5();
 				break;
-			case "SHA1": 
+			case "SHA1":
 				digest = getSHA1();
 				break;
 			default:
 				System.err.println("digestType can only be MD5 or SHA1");
 				System.exit(1);
 		}
-		
-		
+
+
 		// read files		
 		for (String string : files) {
-			System.out.println(string);			
+			System.out.println(string);
 		}
 	}
 
