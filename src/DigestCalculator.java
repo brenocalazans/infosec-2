@@ -24,9 +24,16 @@ class DigestFile {
 	public ArrayList<DigestDetail> digestList = new ArrayList<DigestDetail>();
 	public String currentStatus = null;
 
+<<<<<<< HEAD
 	public DigestFile(String path, String digestAlgorithm) throws IOException, NoSuchAlgorithmException {
 		this.filename = path;
 		
+=======
+	public FileDigestDetail(String path) throws IOException, NoSuchAlgorithmException {
+		this.filename = path.substring(path.lastIndexOf('/')+1);
+		this.digestList = new DigestDetail[2];
+
+>>>>>>> aa45109d7be23f801d8590bd62e55bbe5dc53caa
 		File file = new File(path);
 		byte[] fileData = new byte[(int) file.length()];
 		DataInputStream dis = new DataInputStream(new FileInputStream(file));
@@ -122,11 +129,29 @@ public class DigestCalculator {
 			files.add(args[i]);
 		}
 
+<<<<<<< HEAD
 		// get digestListFile		
 		DigestListFile digestListFile = new DigestListFile(args[args.length - 1]);				
 				//
 		for (int i = 0; i < files.size(); i++) {			
 			calculatedDigest.add(new DigestFile(files.get(i), digestType));
+=======
+		System.out.println(new FileDigestDetail("arquivo2.txt").toString());
+
+		// get digistListFile
+		digestListFile = args[args.length - 1];
+
+		switch (digestType) {
+			case "MD5":
+				digest = getMD5();
+				break;
+			case "SHA1":
+				digest = getSHA1();
+				break;
+			default:
+				System.err.println("digestType can only be MD5 or SHA1");
+				System.exit(1);
+>>>>>>> aa45109d7be23f801d8590bd62e55bbe5dc53caa
 		}
 		
 		// Verifica se os digests calculados nessa rodada colidem com outro digest calculado 
