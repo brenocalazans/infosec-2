@@ -1,14 +1,54 @@
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Array;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
+class DigestDetail {
+	public String digestType;
+	public String digest;
+
+	@Override
+	public String toString() {
+		return digestType + " " + digest;
+	}
+}
+
+class FileDigestDetail {
+	public String filename;
+	public DigestDetail[] digestList;
+
+	@Override
+	public String toString() {
+		return filename + " " + Arrays.toString(digestList);
+	}
+}
+
+class DigestFile {
+	// Lista de arquivos descritos neste DigestFile
+	public FileDigestDetail[] files;
+
+	// Lê um arquivo de Digests e retorna um objeto instanciado
+	public static DigestFile read(String path) {
+
+		return null;
+	}
+
+	// Escreve este arquivo
+	public void write(String path) {
+
+	}
+
+	// Checks if this FileDigestDetail
+	public String checkFile(FileDigestDetail fileDigestDetail) {
+
+		return null;
+	}
+}
 
 public class DigestCalculator {
 	
 	public static final String ENCODING = "UTF-8";
-	
+
 	public static MessageDigest getMD5() throws NoSuchAlgorithmException {
 		return MessageDigest.getInstance("MD5");
 	}
