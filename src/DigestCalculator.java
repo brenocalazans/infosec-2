@@ -8,6 +8,11 @@ class DigestDetail {
 	public String digestType;
 	public String digest;
 
+	DigestDetail(String digestType, String digest) {
+		this.digestType = digestType;
+		this.digest = digest;
+	}
+
 	@Override
 	public String toString() {
 		return digestType + " " + digest;
@@ -28,19 +33,13 @@ class FileDigestDetail {
 		dis.readFully(fileData);
 		dis.close();
 
-		DigestDetail dd = new DigestDetail();
 		MessageDigest md = DigestCalculator.getMD5();
 		md.update(fileData);
-		dd.digestType = "MD5";
-		dd.digest = DigestCalculator.encodeHexString(md.digest());
-		this.digestList[0] = dd;
+		this.digestList[0] = new DigestDetail("MD5", DigestCalculator.encodeHexString(md.digest()));
 
-		dd = new DigestDetail();
 		md = DigestCalculator.getSHA1();
 		md.update(fileData);
-		dd.digestType = "SHA1";
-		dd.digest = DigestCalculator.encodeHexString(md.digest());
-		this.digestList[0] = dd;
+		this.digestList[1] = new DigestDetail("SHA1", DigestCalculator.encodeHexString(md.digest()));
 	}
 
 	@Override
