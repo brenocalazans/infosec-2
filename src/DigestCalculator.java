@@ -19,41 +19,40 @@ class DigestDetail {
 	}
 }
 
-class FileDigestDetail {
+class DigestFile {
 	public String filename;
-	public DigestDetail[] digestList;
+	public ArrayList<DigestDetail> digestList = new ArrayList<DigestDetail>();
 
-	public FileDigestDetail(String path) throws IOException, NoSuchAlgorithmException {
+	public DigestFile(String path, String digestAlgorithm) throws IOException, NoSuchAlgorithmException {
 		this.filename = path;
-		this.digestList = new DigestDetail[2];
-
+		
 		File file = new File(path);
 		byte[] fileData = new byte[(int) file.length()];
 		DataInputStream dis = new DataInputStream(new FileInputStream(file));
 		dis.readFully(fileData);
-		dis.close();
-
-		MessageDigest md = DigestCalculator.getMD5();
-		md.update(fileData);
-		this.digestList[0] = new DigestDetail("MD5", DigestCalculator.encodeHexString(md.digest()));
-
-		md = DigestCalculator.getSHA1();
-		md.update(fileData);
-		this.digestList[1] = new DigestDetail("SHA1", DigestCalculator.encodeHexString(md.digest()));
+		dis.close();		
+		
+		MessageDigest digest = MessageDigest.getInstance(digestAlgorithm);		
+		digest.update(fileData);
+		digestList.add(new DigestDetail(digestAlgorithm, DigestCalculator.encodeHexString(digest.digest())));
 	}
-
+	
 	@Override
 	public String toString() {
-		return filename + " " + Arrays.toString(digestList);
+		String digests = "";
+		for (int i = 0; i < digestList.size(); i++) {
+			digests += digestList.get(i).toString() + " ";
+		}
+		return filename + " " + digests;
 	}
 }
 
-class DigestFile {
+class DigestListFile {
 	// Lista de arquivos descritos neste DigestFile
-	public FileDigestDetail[] files;
+	public DigestFile[] files;
 
-	// Lê um arquivo de Digests e retorna um objeto instanciado
-	public static DigestFile read(String path) {
+	// Le um arquivo de Digests e retorna um objeto instanciado
+	public static DigestListFile read(String path) {
 
 		return null;
 	}
@@ -64,23 +63,15 @@ class DigestFile {
 	}
 
 	// Checks if this FileDigestDetail
-	public String checkFile(FileDigestDetail fileDigestDetail) {
-
+	public String checkFile(DigestFile digestFile) {
+		
 		return null;
 	}
 }
 
 public class DigestCalculator {
 
-	public static final String ENCODING = "UTF-8";
-
-	public static MessageDigest getMD5() throws NoSuchAlgorithmException {
-		return MessageDigest.getInstance("MD5");
-	}
-
-	public static MessageDigest getSHA1() throws NoSuchAlgorithmException {
-		return MessageDigest.getInstance("SHA1");
-	}
+	public static final String ENCODING = "UTF-8";	
 
 	public static String encodeHexString(byte[] str) {
 		StringBuffer buf = new StringBuffer();
@@ -90,12 +81,11 @@ public class DigestCalculator {
 		}
 		return buf.toString();
 	}
-
-	@SuppressWarnings("null")
-	public static void main(String[] args) throws Exception {
+	
+	public static void main(String[] args) throws Exception {	
 		MessageDigest digest;
 		String digestType, digestListFile;
-		ArrayList<String> files = new ArrayList();
+		ArrayList<String> files = new ArrayList<String>();
 
 		// verify args
 		if (args.length < 3) {
@@ -114,22 +104,9 @@ public class DigestCalculator {
 		// get digistListFile
 		digestListFile = args[args.length - 1];
 
-		switch (digestType) {
-			case "MD5":
-				digest = getMD5();
-				break;
-			case "SHA1":
-				digest = getSHA1();
-				break;
-			default:
-				System.err.println("digestType can only be MD5 or SHA1");
-				System.exit(1);
-		}
-
-
-		// read files		
-		for (String string : files) {
-			System.out.println(string);
+		for (int i = 0; i < files.size(); i++) {
+			DigestFile df = new DigestFile(files.get(i), digestType);
+			System.out.println(df.toString());			
 		}
 	}
 
