@@ -24,7 +24,7 @@ class FileDigestDetail {
 	public DigestDetail[] digestList;
 
 	public FileDigestDetail(String path) throws IOException, NoSuchAlgorithmException {
-		this.filename = path;
+		this.filename = path.substring(path.lastIndexOf('/')+1);
 		this.digestList = new DigestDetail[2];
 
 		File file = new File(path);
@@ -110,6 +110,8 @@ public class DigestCalculator {
 		for (int i = 1; i < args.length - 1; i++) {
 			files.add(args[i]);
 		}
+
+		System.out.println(new FileDigestDetail("arquivo2.txt").toString());
 
 		// get digistListFile
 		digestListFile = args[args.length - 1];
