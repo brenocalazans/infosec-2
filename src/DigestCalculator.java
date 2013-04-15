@@ -159,7 +159,11 @@ public class DigestCalculator {
 			for (int j = 0; j < digestListFile.digestLines.size(); j++) {
 				String line = digestListFile.digestLines.get(j);
 				
-				// para cada digest do arquivo
+				// para cada digest do digestFile
+				/*
+				 *  (sempre sera 1, mas armazenamos como lista para podermos escrever mais
+				 *  facilmente no arquivo de lista de digests no caso de NOT OK)
+				 */				
 				for (int k = 0; k < df.digestList.size(); k++) {					
 					// verifica se a linha possui o digest criado
 					if (line.contains(df.digestList.get(k).toString())) {
@@ -180,7 +184,7 @@ public class DigestCalculator {
 						// porem nao contenha o digest
 						if (line.contains(df.filename)) {
 							// STATUS: NOT OK
-							df.currentStatus = DigestCalculator.NOT_OK;
+							df.currentStatus = DigestCalculator.NOT_OK;							
 						}
 					}
 				}				
