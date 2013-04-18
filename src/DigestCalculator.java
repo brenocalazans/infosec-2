@@ -185,7 +185,7 @@ class DigestListFile {
 			// Checar status dos calculatedDigest com os da lista
 			currentDigestFile.checkStatusForList(this.files);
 
-			System.out.println(i + " " + currentDigestFile.toString() + " (" + currentDigestFile.status + ")");
+			System.out.println(currentDigestFile.toString() + " (" + currentDigestFile.status + ")");
 		}
 	}
 
