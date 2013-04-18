@@ -66,23 +66,44 @@ class DigestFile {
 			
 			// Há colisão
 			if (digest.equals(matchingDigest) && !this.filename.equals(df.filename)) {
-				this.status = "COLLISION";
+				this.status = DigestCalculator.COLISION;
 				break;
 			}
 		}
 	}
 
 	public void checkStatusForList(ArrayList<DigestFile> files) {
-		System.out.println("Checando " + this.toString()  + " com " + files.toString() + "\n");
+        if (DigestCalculator.COLISION.equals(this.status)) return;
+        DigestDetail thisDigest = this.digestList.get(0);
+        for (int i = 0; i < files.size(); i++) {
+            DigestFile currentFile = files.get(i);
+            for (int j = 0; j < currentFile.digestList.size(); j++) {
+                DigestDetail currentDigest = currentFile.digestList.get(j);
+                if (thisDigest.digestType.equals(currentDigest.digestType)) {
+                    if (thisDigest.digest.equals(currentDigest.digest)) {
+                        if (this.filename.equals(currentFile.filename)) {
+                            this.status = DigestCalculator.OK;
+                        } else {
+                            this.status = DigestCalculator.COLISION;
+                        }
+                    } else if (this.filename.equals(currentFile.filename)) {
+                        this.status = DigestCalculator.NOT_OK;
+                    }
+                }
+            }
+        }
+        if (this.status == null) {
+            this.status = DigestCalculator.NOT_FOUND;
+        }
 	}
 
 	@Override
 	public String toString() {
 		String digests = "";
 		for (int i = 0; i < digestList.size(); i++) {
-			digests += digestList.get(i).toString() + " ";
+            digests += " " + digestList.get(i).toString();
 		}
-		return filename + " " + digests;
+		return filename + digests;
 	}
 }
 
@@ -92,7 +113,7 @@ class DigestListFile {
 	public String file;
 
 	public DigestListFile(ArrayList<DigestFile> files){
-		this.files = files;
+		this.files.addAll(files);
 	}
 	
 	// Constroi a partir de um arquivo
@@ -110,31 +131,71 @@ class DigestListFile {
 	}
 
 	// Escreve este arquivo
-	public void write(String path) {
+	public void write(String path) throws IOException {
+        String content = this.serialize();
 
+        File file = new File(path);
+
+        // if file doesnt exists, then create it
+        if (!file.exists()) {
+            file.createNewFile();
+        }
+
+        FileWriter fw = new FileWriter(file.getAbsoluteFile());
+        BufferedWriter bw = new BufferedWriter(fw);
+        bw.write(content);
+        bw.close();
 	}
+
+    public void addAll(ArrayList<DigestFile> df) {
+        for (int j = 0; j < df.size(); j++) {
+            DigestFile sameFile = null;
+            // Procura o arquivo correspondente por nome
+            for (int i = 0; i < this.files.size(); i++) {
+                DigestFile thisFile = this.files.get(i);
+                if (thisFile.filename.equals(df.get(j).filename)) {
+                    sameFile = thisFile;
+                }
+            }
+
+            // Procura se pode adicionar digest
+            if (sameFile != null) {
+                if (df.get(j).status.equals(DigestCalculator.NOT_FOUND)) {
+                    sameFile.digestList.add(df.get(j).digestList.get(0));
+                }
+            }
+            else {
+                this.files.add(df.get(j));
+            }
+        }
+    }
 
 	// Atualiza os status dos seus DigestFiles
 	public void checkFiles(ArrayList<DigestFile> calculatedDigest) {
-		DigestListFile collisionCheckList = new DigestListFile(calculatedDigest);
-		collisionCheckList.files.addAll(this.files);
+        ArrayList<DigestFile> collisionCheckList = new ArrayList<DigestFile>(calculatedDigest);
+		collisionCheckList.addAll(this.files);
 		
 		for (int i = 0; i < calculatedDigest.size(); i++) {
-			DigestFile currentDigestFile = collisionCheckList.files.get(i);
+			DigestFile currentDigestFile = calculatedDigest.get(i);
 			// Checa colisões
-			for (int j = 0; j < collisionCheckList.files.size(); j++) {
-				currentDigestFile.checkCollisionWith(collisionCheckList.files.get(j));
+			for (int j = 0; j < collisionCheckList.size(); j++) {
+				currentDigestFile.checkCollisionWith(collisionCheckList.get(j));
 			}
 			
 			// Checar status dos calculatedDigest com os da lista
 			currentDigestFile.checkStatusForList(this.files);
-			
-			if (currentDigestFile.status == null) {
-				currentDigestFile.status = DigestCalculator.NOT_FOUND;
-			}
-			System.out.println(currentDigestFile.toString() + currentDigestFile.status + "\n");
+
+			System.out.println(i + " " + currentDigestFile.toString() + " (" + currentDigestFile.status + ")");
 		}
 	}
+
+    public String serialize() {
+        String file = "";
+        for (int i = 0; i < this.files.size(); i++) {
+            file += this.files.get(i).toString() + "\n";
+        }
+        return file;
+    }
 }
 
 public class DigestCalculator {
@@ -187,6 +248,10 @@ public class DigestCalculator {
 		}
 		
 		digestListFile.checkFiles(calculatedDigest);
+
+        digestListFile.addAll(calculatedDigest);
+
+        digestListFile.write(args[args.length - 1]);
 	}
 
 }
