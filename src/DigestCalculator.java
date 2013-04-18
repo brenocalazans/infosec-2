@@ -64,7 +64,7 @@ class DigestFile {
 					matchingDigest = df.digestList.get(k).digest;
 			}
 			
-			// H· colis„o
+			// H√° colis√£o
 			if (digest.equals(matchingDigest) && !this.filename.equals(df.filename)) {
 				this.status = "COLLISION";
 				break;
@@ -73,7 +73,7 @@ class DigestFile {
 	}
 
 	public void checkStatusForList(ArrayList<DigestFile> files) {
-		System.out.println("Checando " + this.toString()  + " com " + files.toString());
+		System.out.println("Checando " + this.toString()  + " com " + files.toString() + "\n");
 	}
 
 	@Override
@@ -121,7 +121,7 @@ class DigestListFile {
 		
 		for (int i = 0; i < calculatedDigest.size(); i++) {
 			DigestFile currentDigestFile = collisionCheckList.files.get(i);
-			// Checa colisıes
+			// Checa colis√µes
 			for (int j = 0; j < collisionCheckList.files.size(); j++) {
 				currentDigestFile.checkCollisionWith(collisionCheckList.files.get(j));
 			}
@@ -132,7 +132,7 @@ class DigestListFile {
 			if (currentDigestFile.status == null) {
 				currentDigestFile.status = DigestCalculator.NOT_FOUND;
 			}
-			System.out.println(currentDigestFile.toString() + currentDigestFile.status);
+			System.out.println(currentDigestFile.toString() + currentDigestFile.status + "\n");
 		}
 	}
 }
